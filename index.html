@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EcoSphere ESG Management Platform</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0; padding: 0;
+      background: #f4f6f9;
+      color: #333;
+    }
+    header {
+      background: #2c3e50;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+    nav {
+      background: #34495e;
+      display: flex;
+      justify-content: center;
+      padding: 10px;
+    }
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      margin: 0 15px;
+      font-weight: bold;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    .container {
+      padding: 30px;
+    }
+    .modules {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: transform 0.2s;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+    }
+    .card h2 {
+      margin-top: 0;
+      color: #2c3e50;
+    }
+    footer {
+      background: #2c3e50;
+      color: #fff;
+      text-align: center;
+      padding: 15px;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>EcoSphere ESG Management Platform</h1>
+    <p>Measure • Manage • Improve Sustainability</p>
+  </header>
+
+  <nav>
+    <a href="#environmental">Environmental</a>
+    <a href="#social">Social</a>
+    <a href="#governance">Governance</a>
+    <a href="#gamification">Gamification</a>
+    <a href="#reports">Reports</a>
+  </nav>
+
+  <div class="container">
+    <div class="modules">
+      <div class="card" id="environmental">
+        <h2>🌱 Environmental</h2>
+        <p>Track carbon emissions, configure emission factors, set sustainability goals, and monitor department-level performance.</p>
+      </div>
+      <div class="card" id="social">
+        <h2>🤝 Social</h2>
+        <p>Manage CSR activities, employee participation, diversity metrics, and training completion records.</p>
+      </div>
+      <div class="card" id="governance">
+        <h2>📜 Governance</h2>
+        <p>Define ESG policies, track acknowledgements, schedule audits, and monitor compliance issues with ownership and deadlines.</p>
+      </div>
+      <div class="card" id="gamification">
+        <h2>🏆 Gamification</h2>
+        <p>Engage employees with challenges, XP, badges, rewards, and leaderboards to encourage sustainability participation.</p>
+      </div>
+    </div>
+
+    <div class="card" id="reports" style="margin-top:30px;">
+      <h2>📊 Reports & Dashboard</h2>
+      <p>Generate Environmental, Social, Governance, and ESG Summary reports. Use filters by department, date, employee, or category. Export to PDF, Excel, or CSV.</p>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2026 EcoSphere | ESG Management Platform</p>
+  </footer>
+</body>
+</html>
