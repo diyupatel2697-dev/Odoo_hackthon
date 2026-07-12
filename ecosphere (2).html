@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EcoSphere — ESG Management Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1B2A22;
+    --ink-soft:#4B5B52;
+    --canvas:#EEF1EC;
+    --surface:#FFFFFF;
+    --line:#DCE2D9;
+    --env:#3E7C59;
+    --env-soft:#E4EFE8;
+    --soc:#2C5F8A;
+    --soc-soft:#E4ECF3;
+    --gov:#A8823D;
+    --gov-soft:#F3ECDD;
+    --game:#B23E6C;
+    --game-soft:#F5E4EC;
+    --danger:#B3492F;
+    --danger-soft:#F6E4DD;
+    --radius:14px;
+    --shadow: 0 1px 2px rgba(27,42,34,0.06), 0 6px 20px rgba(27,42,34,0.05);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--canvas);
+    color:var(--ink);
+    font-family:'Inter',Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  #root{min-height:100vh;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  .display{font-family:'Fraunces',Georgia,serif;}
+  a{color:inherit;}
+  ::selection{background:var(--env-soft);}
+  button{font-family:inherit;cursor:pointer;}
+  input,select{font-family:inherit;}
+
+  .app-shell{display:flex;min-height:100vh;}
+  .sidebar{
+    width:236px;flex-shrink:0;background:#182620;color:#EAF0EA;
+    padding:22px 16px;display:flex;flex-direction:column;gap:6px;
+    position:sticky;top:0;height:100vh;
+  }
+  .brand{display:flex;align-items:center;gap:10px;padding:4px 8px 20px 8px;}
+  .brand-mark{width:34px;height:34px;flex-shrink:0;}
+  .brand-name{font-family:'Fraunces',Georgia,serif;font-weight:600;font-size:19px;letter-spacing:0.2px;}
+  .brand-sub{font-family:'IBM Plex Mono',monospace;font-size:10px;color:#8FA595;letter-spacing:0.08em;text-transform:uppercase;margin-top:1px;}
+
+  .nav-group{margin-top:14px;}
+  .nav-item{
+    display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;
+    color:#CBDACE;font-size:13.5px;font-weight:500;border:none;background:transparent;width:100%;text-align:left;
+    transition:background .15s ease, color .15s ease;
+  }
+  .nav-item:hover{background:#213329;color:#fff;}
+  .nav-item.active{background:#2C4838;color:#fff;}
+  .nav-item .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+  .sidebar-footer{margin-top:auto;padding:12px 10px;border-top:1px solid #2A3D32;font-size:11.5px;color:#7F9A89;}
+
+  .main{flex:1;min-width:0;display:flex;flex-direction:column;}
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 32px;border-bottom:1px solid var(--line);background:rgba(238,241,236,0.9);
+    backdrop-filter:blur(6px);position:sticky;top:0;z-index:5;
+  }
+  .topbar h1{font-family:'Fraunces',Georgia,serif;font-size:22px;font-weight:600;margin:0;}
+  .topbar .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-soft);margin-bottom:2px;}
+  .content{padding:28px 32px 60px 32px;max-width:1220px;}
+
+  .xp-pill{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 14px 6px 6px;box-shadow:var(--shadow);}
+  .xp-avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--game),var(--gov));display:flex;align-items:center;justify-content:center;color:#fff;font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:12px;}
+  .xp-text{font-size:12.5px;line-height:1.25;}
+  .xp-text b{font-family:'IBM Plex Mono',monospace;}
+
+  .grid{display:grid;gap:16px;}
+  .grid-4{grid-template-columns:repeat(4,1fr);}
+  .grid-3{grid-template-columns:repeat(3,1fr);}
+  .grid-2{grid-template-columns:1.3fr 1fr;}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;}
+  .card h3{margin:0 0 4px 0;font-family:'Fraunces',Georgia,serif;font-size:16px;font-weight:600;}
+  .card .sub{font-size:12px;color:var(--ink-soft);margin-bottom:14px;}
+  .stat-card{padding:18px 20px;}
+  .stat-card .label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:0.08em;color:var(--ink-soft);}
+  .stat-card .value{font-family:'Fraunces',Georgia,serif;font-size:32px;font-weight:600;margin-top:4px;}
+  .stat-card .delta{font-size:12px;margin-top:6px;font-weight:500;}
+  .up{color:var(--env);}
+  .down{color:var(--danger);}
+
+  .section-title{display:flex;align-items:baseline;justify-content:space-between;margin:36px 0 14px 0;}
+  .section-title h2{font-family:'Fraunces',Georgia,serif;font-size:19px;margin:0;font-weight:600;}
+  .section-title .count{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-soft);}
+
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th{text-align:left;font-family:'IBM Plex Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink-soft);font-weight:500;padding:8px 10px;border-bottom:1px solid var(--line);}
+  td{padding:10px 10px;border-bottom:1px solid var(--line);vertical-align:middle;}
+  tr:last-child td{border-bottom:none;}
+  tr:hover td{background:#F7F9F6;}
+
+  .badge-chip{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:600;font-family:'IBM Plex Mono',monospace;letter-spacing:0.02em;}
+  .chip-green{background:var(--env-soft);color:var(--env);}
+  .chip-blue{background:var(--soc-soft);color:var(--soc);}
+  .chip-gold{background:var(--gov-soft);color:var(--gov);}
+  .chip-pink{background:var(--game-soft);color:var(--game);}
+  .chip-red{background:var(--danger-soft);color:var(--danger);}
+  .chip-grey{background:#EDEFEA;color:var(--ink-soft);}
+
+  .progress-track{width:100%;height:8px;background:#E5E9E1;border-radius:99px;overflow:hidden;}
+  .progress-fill{height:100%;border-radius:99px;}
+
+  .btn{border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:8px 14px;font-size:12.5px;font-weight:600;}
+  .btn:hover{background:#F5F7F3;}
+  .btn-primary{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .btn-primary:hover{background:#0F1912;}
+  .btn-primary:disabled{background:#B9C2BB;border-color:#B9C2BB;cursor:not-allowed;}
+  .btn-ghost{border:none;background:transparent;padding:6px 8px;}
+  .btn-sm{padding:5px 10px;font-size:11.5px;}
+
+  .toggle{position:relative;width:38px;height:22px;border-radius:99px;background:#D6DCD2;border:none;flex-shrink:0;transition:background .15s;}
+  .toggle.on{background:var(--env);}
+  .toggle .knob{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left .15s;box-shadow:0 1px 2px rgba(0,0,0,0.2);}
+  .toggle.on .knob{left:18px;}
+  .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line);}
+  .toggle-row:last-child{border-bottom:none;}
+  .toggle-row .t-label{font-size:13px;font-weight:600;}
+  .toggle-row .t-sub{font-size:11.5px;color:var(--ink-soft);margin-top:2px;}
+
+  .kanban{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;}
+  .kanban-col{background:#F3F5F0;border-radius:12px;padding:10px;min-height:120px;}
+  .kanban-col h4{font-family:'IBM Plex Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink-soft);margin:2px 6px 10px 6px;}
+  .kcard{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:8px;box-shadow:var(--shadow);}
+  .kcard .kt{font-weight:600;font-size:12.5px;line-height:1.3;}
+  .kcard .km{font-size:10.5px;color:var(--ink-soft);margin-top:6px;font-family:'IBM Plex Mono',monospace;}
+  .kcard .kbtns{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
+
+  .filter-bar{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px;}
+  .filter-bar select, .filter-bar input{border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:12.5px;background:#fff;}
+
+  .compass-wrap{display:flex;align-items:center;gap:28px;flex-wrap:wrap;}
+  .compass-legend{display:flex;flex-direction:column;gap:10px;}
+  .leg-row{display:flex;align-items:center;gap:8px;font-size:12.5px;}
+  .leg-swatch{width:9px;height:9px;border-radius:2px;display:inline-block;}
+  .leg-row b{font-family:'IBM Plex Mono',monospace;margin-left:auto;padding-left:14px;}
+
+  .reward-card{border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px;background:#fff;}
+  .reward-card .rname{font-weight:600;font-size:13.5px;}
+  .reward-card .rdesc{font-size:11.5px;color:var(--ink-soft);flex:1;}
+  .reward-card .rfoot{display:flex;align-items:center;justify-content:space-between;margin-top:4px;}
+
+  .leaderboard-row{display:flex;align-items:center;gap:12px;padding:9px 6px;border-bottom:1px solid var(--line);}
+  .leaderboard-row:last-child{border-bottom:none;}
+  .lb-rank{font-family:'Fraunces',Georgia,serif;font-weight:600;font-size:14px;width:22px;color:var(--ink-soft);}
+  .lb-rank.top{color:var(--game);}
+  .lb-name{font-weight:600;font-size:13px;flex:1;}
+  .lb-dept{font-size:11px;color:var(--ink-soft);}
+  .lb-xp{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--game);font-weight:600;}
+
+  .weight-row{display:flex;align-items:center;gap:12px;padding:8px 0;}
+  .weight-row .wlabel{width:110px;font-size:12.5px;font-weight:600;}
+  .weight-row input[type=range]{flex:1;accent-color:var(--ink);}
+  .weight-row .wval{width:40px;text-align:right;font-family:'IBM Plex Mono',monospace;font-size:12px;}
+
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:10px;font-size:12.5px;box-shadow:0 8px 24px rgba(0,0,0,0.25);z-index:50;}
+
+  .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#182620,#22392C 60%,#182620);padding:20px;}
+  .login-card{width:380px;background:var(--surface);border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,0.35);padding:32px 30px;}
+  .login-card .brand{padding:0 0 22px 0;justify-content:center;}
+  .login-card .brand-name{color:var(--ink);}
+  .login-card .brand-sub{color:var(--ink-soft);}
+  .login-field{margin-bottom:14px;}
+  .login-field label{display:block;font-size:11.5px;font-weight:600;color:var(--ink-soft);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.05em;font-family:'IBM Plex Mono',monospace;}
+  .login-field select, .login-field input{width:100%;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:13.5px;background:#fff;}
+  .login-error{background:var(--danger-soft);color:var(--danger);font-size:12px;padding:8px 12px;border-radius:8px;margin-bottom:14px;}
+  .login-hint{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);font-size:11px;color:var(--ink-soft);}
+  .login-hint table{margin-top:8px;}
+  .login-hint th, .login-hint td{padding:4px 6px;font-size:11px;}
+  .btn-block{width:100%;padding:11px;font-size:13px;}
+
+  .role-badge{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:999px;font-size:10.5px;font-weight:700;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:0.04em;}
+  .role-admin{background:var(--gov-soft);color:var(--gov);}
+  .role-employee{background:var(--soc-soft);color:var(--soc);}
+
+  .user-menu{display:flex;align-items:center;gap:10px;}
+  .user-menu .um-info{text-align:right;line-height:1.3;}
+  .user-menu .um-name{font-size:12.5px;font-weight:600;}
+  .user-menu .um-role{font-size:10.5px;color:var(--ink-soft);}
+
+  .activity-row{display:flex;align-items:flex-start;gap:12px;padding:10px 4px;border-bottom:1px solid var(--line);}
+  .activity-row:last-child{border-bottom:none;}
+  .activity-avatar{width:28px;height:28px;border-radius:50%;background:var(--env-soft);color:var(--env);display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:10.5px;flex-shrink:0;}
+  .activity-body{flex:1;font-size:12.5px;}
+  .activity-body .a-line{line-height:1.4;}
+  .activity-body .a-time{font-size:11px;color:var(--ink-soft);margin-top:2px;font-family:'IBM Plex Mono',monospace;}
+
+  .access-denied{padding:40px 20px;text-align:center;color:var(--ink-soft);}
+
+  @media (max-width: 980px){
+    .grid-4{grid-template-columns:repeat(2,1fr);}
+    .grid-3{grid-template-columns:repeat(2,1fr);}
+    .grid-2{grid-template-columns:1fr;}
+    .kanban{grid-template-columns:1fr;}
+    .app-shell{flex-direction:column;}
+    .sidebar{width:100%;height:auto;position:relative;flex-direction:row;flex-wrap:wrap;align-items:center;}
+    .brand{padding-bottom:4px;}
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+(function(){
+"use strict";
+
+/* ---------------- Mock data ---------------- */
+
+var DEPARTMENTS = [
+  {id:"D1", name:"Manufacturing", code:"MFG", head:"R. Iyer", employees:214, env:0, soc:0, gov:0},
+  {id:"D2", name:"Logistics & Fleet", code:"LOG", head:"S. Achebe", employees:96, env:0, soc:0, gov:0},
+  {id:"D3", name:"Corporate Office", code:"CORP", head:"M. Laurent", employees:140, env:0, soc:0, gov:0},
+  {id:"D4", name:"Procurement", code:"PROC", head:"A. Kowalski", employees:52, env:0, soc:0, gov:0},
+  {id:"D5", name:"R&D", code:"RND", head:"T. Nakamura", employees:77, env:0, soc:0, gov:0}
+];
+
+function deptTotal(d, w){
+  return Math.round((d.env*w.env + d.soc*w.soc + d.gov*w.gov)/100);
+}
+
+var EMISSION_FACTORS = [
+  {id:"EF1", name:"Diesel (Fleet)", unit:"litre", factor:2.68, category:"Fleet"},
+  {id:"EF2", name:"Grid Electricity", unit:"kWh", factor:0.71, category:"Manufacturing"},
+  {id:"EF3", name:"Natural Gas", unit:"m3", factor:1.89, category:"Manufacturing"},
+  {id:"EF4", name:"Air Freight", unit:"kg-km", factor:0.602, category:"Procurement"},
+  {id:"EF5", name:"Paper (Office)", unit:"kg", factor:0.94, category:"Corporate"}
+];
+
+var CARBON_TX = [];
+
+var GOALS = [
+  {id:"G1", name:"Reduce Scope 1 emissions", current:0, target:100, unit:"% of target", deadline:"Dec 2026"},
+  {id:"G2", name:"Renewable energy share", current:0, target:60, unit:"% of grid mix", deadline:"Mar 2027"},
+  {id:"G3", name:"Zero-waste-to-landfill sites", current:0, target:5, unit:"sites", deadline:"Jun 2027"}
+];
+
+var CSR_ACTIVITIES_INIT = [];
+
+var TRAINING = [
+  {id:"TR1", course:"Code of Conduct Refresher", dept:"All Departments", rate:0},
+  {id:"TR2", course:"Workplace Safety", dept:"Manufacturing", rate:0},
+  {id:"TR3", course:"Data Privacy Essentials", dept:"Corporate Office", rate:0},
+  {id:"TR4", course:"Anti-Bribery & Corruption", dept:"Procurement", rate:0}
+];
+
+var DIVERSITY = [
+  {label:"Women in workforce", value:0},
+  {label:"Women in leadership", value:0},
+  {label:"Under-30 employees", value:0},
+  {label:"Employees with disabilities", value:0}
+];
+
+var POLICIES = [
+  {id:"P1", title:"Anti-Bribery & Corruption Policy", version:"v3.2", dept:"All Departments", status:"Active"},
+  {id:"P2", title:"Environmental Compliance Policy", version:"v2.0", dept:"Manufacturing", status:"Active"},
+  {id:"P3", title:"Supplier Code of Conduct", version:"v1.4", dept:"Procurement", status:"Under Review"},
+  {id:"P4", title:"Data Protection Policy", version:"v4.1", dept:"All Departments", status:"Active"}
+];
+
+var ACKNOWLEDGEMENTS = [];
+
+var AUDITS = [];
+
+var COMPLIANCE_ISSUES_INIT = [];
+
+var CHALLENGES_INIT = [
+  {id:"CH1", title:"Bike-to-Work Week", category:"Environment", xp:150, difficulty:"Easy", status:"Draft"},
+  {id:"CH2", title:"Zero Printed Paper Sprint", category:"Environment", xp:100, difficulty:"Easy", status:"Draft"},
+  {id:"CH3", title:"Mentor a New Joiner", category:"Social", xp:200, difficulty:"Medium", status:"Draft"},
+  {id:"CH4", title:"Report a Near-Miss Safety Event", category:"Governance", xp:120, difficulty:"Easy", status:"Draft"},
+  {id:"CH5", title:"Community Solar Volunteer Day", category:"Environment", xp:250, difficulty:"Hard", status:"Draft"},
+  {id:"CH6", title:"Diversity Panel Speaker", category:"Social", xp:180, difficulty:"Medium", status:"Draft"}
+];
+
+var STAGES = ["Draft","Active","Under Review","Completed","Archived"];
+
+var BADGES = [
+  {id:"B1", name:"Carbon Cutter", desc:"Logged 10 low-carbon commutes", icon:"🌿", unlocked:false},
+  {id:"B2", name:"Community Champion", desc:"Completed 5 CSR activities", icon:"🤝", unlocked:false},
+  {id:"B3", name:"Compliance Ally", desc:"Acknowledged all active policies on time", icon:"📋", unlocked:false},
+  {id:"B4", name:"Challenge Streak x5", desc:"Completed 5 challenges in a row", icon:"🔥", unlocked:false},
+  {id:"B5", name:"Mentor", desc:"Mentored 3 new joiners", icon:"🎓", unlocked:false}
+];
+
+var REWARDS_INIT = [
+  {id:"R1", name:"Extra Wellness Day", desc:"One additional paid wellness day off", points:800, stock:12},
+  {id:"R2", name:"EcoSphere Water Bottle", desc:"Insulated steel bottle, made from recycled metal", points:150, stock:40},
+  {id:"R3", name:"Rs 2,000 Green Voucher", desc:"Redeemable at partnered sustainable retailers", points:1200, stock:8},
+  {id:"R4", name:"Reserved EV Charging Spot", desc:"One month of reserved office EV charging", points:600, stock:5}
+];
+
+var CATEGORIES = ["Environment","Health","Education","Diversity & Inclusion","Fitness Challenge","Waste Reduction","Volunteering"];
+
+/* ---------------- Users & authorization ---------------- */
+
+var USERS = [];
+var userIdCounter = 1;
+function nextUserId(){ return "U" + (userIdCounter++); }
+
+function initials(name){
+  return name.split(" ").map(function(p){ return p.charAt(0); }).join("").slice(0,2).toUpperCase();
+}
+
+function isAdmin(){
+  return !!(state.currentUser && state.currentUser.role==="admin");
+}
+
+var NAV = [
+  {id:"dashboard", label:"Dashboard", color:"var(--ink)", roles:["admin","employee"]},
+  {id:"environmental", label:"Environmental", color:"var(--env)", roles:["admin","employee"]},
+  {id:"social", label:"Social", color:"var(--soc)", roles:["admin","employee"]},
+  {id:"governance", label:"Governance", color:"var(--gov)", roles:["admin","employee"]},
+  {id:"gamification", label:"Gamification", color:"var(--game)", roles:["admin","employee"]},
+  {id:"activity", label:"Activity Log", color:"var(--soc)", roles:["admin","employee"]},
+  {id:"reports", label:"Reports", color:"var(--ink-soft)", roles:["admin","employee"]},
+  {id:"settings", label:"Settings", color:"var(--ink-soft)", roles:["admin"]}
+];
+
+function getNav(){
+  var role = state.currentUser ? state.currentUser.role : "employee";
+  return NAV.filter(function(n){ return n.roles.indexOf(role)!==-1; });
+}
+
+var TITLES = {
+  dashboard:["Overview","Organization Dashboard"],
+  environmental:["Environmental","Carbon, energy & sustainability goals"],
+  social:["Social","CSR, participation & workforce metrics"],
+  governance:["Governance","Policies, audits & compliance"],
+  gamification:["Gamification","Challenges, badges & rewards"],
+  activity:["Activity Log","Who did what, and when"],
+  reports:["Reports","Build and export ESG reports"],
+  settings:["Settings","Configuration & administration"]
+};
+
+/* ---------------- App state ---------------- */
+
+var state = {
+  view: "dashboard",
+  weights: {env:40, soc:30, gov:30},
+  config: {
+    autoCalc:true, evidenceRequired:true, badgeAutoAward:true,
+    notifyIssue:true, notifyApproval:true, notifyPolicy:true, notifyBadge:true
+  },
+  challenges: CHALLENGES_INIT.map(function(c){ return Object.assign({}, c); }),
+  issues: COMPLIANCE_ISSUES_INIT.map(function(c){ return Object.assign({}, c); }),
+  csrActivities: CSR_ACTIVITIES_INIT.map(function(c){ return Object.assign({}, c); }),
+  rewards: REWARDS_INIT.map(function(c){ return Object.assign({}, c); }),
+  points: 0,
+  toast: null,
+  reportFilters: {department:"All", module:"All", category:"All", challenge:"All", from:"", to:""},
+  reportBuilt: null,
+  /* --- auth / activity --- */
+  currentUser: null,
+  authMode: "login",
+  authError: null,
+  users: [],
+  activityLog: [],
+  activityFilter: "All"
+};
+
+var toastTimer = null;
+function flash(msg){
+  state.toast = msg;
+  render();
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ state.toast = null; render(); }, 2400);
+}
+
+var activityCounter = 1;
+function logActivity(action, detail){
+  var u = state.currentUser;
+  if(!u) return;
+  state.activityLog.unshift({
+    id: "ACT" + (activityCounter++),
+    userId: u.id,
+    userName: u.name,
+    role: u.role,
+    action: action,
+    detail: detail || "",
+    ts: new Date().toLocaleString()
+  });
+  if(state.activityLog.length > 200) state.activityLog.length = 200;
+}
+
+/* ---------------- Helpers ---------------- */
+
+function esc(s){
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+function chip(text, tone){
+  return '<span class="badge-chip chip-'+tone+'">'+esc(text)+'</span>';
+}
+
+function progress(pct, color){
+  pct = Math.max(0, Math.min(100, pct));
+  return '<div class="progress-track"><div class="progress-fill" style="width:'+pct+'%;background:'+color+'"></div></div>';
+}
+
+function statusTone(status){
+  var s = status.toLowerCase();
+  if(["active","approved","acknowledged","closed","completed","resolved"].indexOf(s)!==-1) return "green";
+  if(["pending review","under review","in progress","reminder sent"].indexOf(s)!==-1) return "gold";
+  if(["open","overdue","high"].indexOf(s)!==-1) return "red";
+  if(["draft","archived"].indexOf(s)!==-1) return "grey";
+  return "blue";
+}
+
+function statCard(label, value, delta, deltaUp, sub){
+  var deltaHtml = "";
+  if(delta){
+    deltaHtml = '<div class="delta '+(deltaUp?"up":"down")+'">'+(deltaUp?"&#9650;":"&#9660;")+' '+esc(delta)+' '+esc(sub||"")+'</div>';
+  } else if(sub){
+    deltaHtml = '<div class="delta" style="color:var(--ink-soft)">'+esc(sub)+'</div>';
+  }
+  return '<div class="card stat-card"><div class="label">'+esc(label)+'</div><div class="value">'+esc(value)+'</div>'+deltaHtml+'</div>';
+}
+
+function compassSvg(env, soc, gov, overall){
+  var R = [70,54,38];
+  function track(r){ return '<circle cx="90" cy="90" r="'+r+'" fill="none" stroke="#E5E9E1" stroke-width="10"/>'; }
+  function arc(r, pct, color){
+    var c = 2*Math.PI*r;
+    var dash = (pct/100)*c;
+    return '<circle cx="90" cy="90" r="'+r+'" fill="none" stroke="'+color+'" stroke-width="10" stroke-linecap="round" stroke-dasharray="'+dash+' '+(c-dash)+'" transform="rotate(-90 90 90)" opacity="0.95"/>';
+  }
+  return '<svg width="180" height="180" viewBox="0 0 180 180">'+
+    track(R[0])+track(R[1])+track(R[2])+
+    arc(R[0], env, "var(--env)")+
+    arc(R[1], soc, "var(--soc)")+
+    arc(R[2], gov, "var(--gov)")+
+    '<text x="90" y="85" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-weight="600" font-size="30" fill="var(--ink)">'+overall+'</text>'+
+    '<text x="90" y="103" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="9.5" letter-spacing="1" fill="var(--ink-soft)">ESG SCORE</text>'+
+    '</svg>';
+}
+
+function brandMark(){
+  return '<svg viewBox="0 0 40 40" class="brand-mark">'+
+    '<circle cx="20" cy="20" r="17" fill="none" stroke="#3E7C59" stroke-width="3.4" stroke-dasharray="70 40" transform="rotate(-90 20 20)"/>'+
+    '<circle cx="20" cy="20" r="11.5" fill="none" stroke="#2C5F8A" stroke-width="3.4" stroke-dasharray="45 30" transform="rotate(-90 20 20)"/>'+
+    '<circle cx="20" cy="20" r="6" fill="#A8823D"/>'+
+    '</svg>';
+}
+
+/* ---------------- Login / signup view ---------------- */
+
+function viewLogin(){
+  var deptOpts = DEPARTMENTS.map(function(d){ return '<option value="'+esc(d.name)+'">'+esc(d.name)+'</option>'; }).join("");
+  var errorHtml = state.authError ? '<div class="login-error">'+esc(state.authError)+'</div>' : '';
+
+  if(state.authMode==="signup"){
+    return '<div class="login-wrap"><div class="login-card">'+
+      '<div class="brand">'+brandMark()+'<div><div class="brand-name">EcoSphere</div><div class="brand-sub">ESG Platform</div></div></div>'+
+      errorHtml+
+      '<div class="login-field"><label>Full name</label><input type="text" id="signup-name" placeholder="e.g. Priya Sharma" /></div>'+
+      '<div class="login-field"><label>Email</label><input type="email" id="signup-email" placeholder="you@company.com" /></div>'+
+      '<div class="login-field"><label>Department</label><select id="signup-department"><option value="">Select department</option>'+deptOpts+'</select></div>'+
+      '<div class="login-field"><label>Create authorization code</label><input type="password" id="signup-code" placeholder="Choose a code" /></div>'+
+      '<div class="login-field"><label>Confirm code</label><input type="password" id="signup-code2" placeholder="Re-enter the code" /></div>'+
+      '<button class="btn btn-primary btn-block" data-action="signup">Create account</button>'+
+      '<div class="login-hint" style="text-align:center">Already have an account? <button class="btn btn-ghost btn-sm" data-action="toggle-auth" style="text-decoration:underline;padding:0">Sign in</button></div>'+
+    '</div></div>';
+  }
+
+  return '<div class="login-wrap"><div class="login-card">'+
+    '<div class="brand">'+brandMark()+'<div><div class="brand-name">EcoSphere</div><div class="brand-sub">ESG Platform</div></div></div>'+
+    errorHtml+
+    '<div class="login-field"><label>Email</label><input type="email" id="login-email" placeholder="you@company.com" /></div>'+
+    '<div class="login-field"><label>Authorization code</label><input type="password" id="login-code" placeholder="Enter your access code" /></div>'+
+    '<button class="btn btn-primary btn-block" data-action="login">Sign in</button>'+
+    '<div class="login-hint" style="text-align:center">New to EcoSphere? <button class="btn btn-ghost btn-sm" data-action="toggle-auth" style="text-decoration:underline;padding:0">Create an account</button></div>'+
+  '</div></div>';
+}
+
+/* ---------------- Views ---------------- */
+
+function viewDashboard(){
+  var w = state.weights;
+  var depts = DEPARTMENTS.map(function(d){ var t = Object.assign({}, d); t.total = deptTotal(d, w); return t; });
+  var avgEnv = Math.round(depts.reduce(function(a,d){return a+d.env;},0)/depts.length);
+  var avgSoc = Math.round(depts.reduce(function(a,d){return a+d.soc;},0)/depts.length);
+  var avgGov = Math.round(depts.reduce(function(a,d){return a+d.gov;},0)/depts.length);
+  var overall = Math.round((avgEnv*w.env + avgSoc*w.soc + avgGov*w.gov)/100);
+  var ranked = depts.slice().sort(function(a,b){ return b.total-a.total; });
+  var openIssues = state.issues.filter(function(i){ return i.status==="Open"; }).length;
+
+  var rankedHtml = ranked.map(function(d,i){
+    return '<div class="leaderboard-row">'+
+      '<div class="lb-rank'+(i===0?" top":"")+'">'+(i+1)+'</div>'+
+      '<div style="flex:1"><div class="lb-name">'+esc(d.name)+'</div><div style="margin-top:4px">'+progress(d.total, i===0?"var(--game)":"var(--ink)")+'</div></div>'+
+      '<div class="lb-xp">'+d.total+'</div>'+
+      '</div>';
+  }).join("");
+
+  return '<div>'+
+    '<div class="grid grid-2">'+
+      '<div class="card"><h3>Organization ESG Compass</h3><div class="sub">Weighted average of department scores &middot; E '+w.env+'% &middot; S '+w.soc+'% &middot; G '+w.gov+'%</div>'+
+        '<div class="compass-wrap">'+compassSvg(avgEnv,avgSoc,avgGov,overall)+
+        '<div class="compass-legend">'+
+          '<div class="leg-row"><span class="leg-swatch" style="background:var(--env)"></span>Environmental <b>'+avgEnv+'</b></div>'+
+          '<div class="leg-row"><span class="leg-swatch" style="background:var(--soc)"></span>Social <b>'+avgSoc+'</b></div>'+
+          '<div class="leg-row"><span class="leg-swatch" style="background:var(--gov)"></span>Governance <b>'+avgGov+'</b></div>'+
+        '</div></div></div>'+
+      '<div class="card"><h3>Department rankings</h3><div class="sub">Total ESG score, this quarter</div>'+rankedHtml+'</div>'+
+    '</div>'+
+    '<div class="section-title"><h2>This week</h2></div>'+
+    '<div class="grid grid-4">'+
+      statCard("Carbon logged","0 t CO2e","0 t",false,"vs last week")+
+      statCard("CSR participation","0 employees","0",true,"vs last week")+
+      statCard("Open compliance issues", openIssues, "0 overdue", false, "")+
+      statCard("Active challenges", state.challenges.filter(function(c){return c.status==="Active";}).length, null, false, "")+
+    '</div>'+
+    '<div class="section-title"><h2>Needs attention</h2></div>'+
+    '<div class="card" style="padding:0"><table><thead><tr><th>Item</th><th>Type</th><th>Owner / Dept</th><th>Due</th><th>Status</th></tr></thead><tbody>'+
+      '<tr><td colspan="5" style="padding:16px;color:var(--ink-soft);font-size:12.5px">Nothing needs attention yet.</td></tr>'+
+    '</tbody></table></div>'+
+  '</div>';
+}
+
+function viewEnvironmental(){
+  var autoCalc = state.config.autoCalc;
+  var goalsHtml = GOALS.map(function(g){
+    return '<div class="card"><h3 style="font-size:14px">'+esc(g.name)+'</h3><div class="sub">Target by '+esc(g.deadline)+'</div>'+
+      progress((g.current/g.target)*100, "var(--env)")+
+      '<div style="margin-top:8px;font-size:12px;color:var(--ink-soft)" class="mono">'+g.current+' / '+g.target+' '+esc(g.unit)+'</div></div>';
+  }).join("");
+
+  var txHtml = CARBON_TX.map(function(t){
+    return '<tr><td class="mono">'+t.id+'</td><td>'+t.date+'</td><td>'+esc(t.department)+'</td><td>'+t.source+'</td><td class="mono">'+t.qty+'</td><td>'+t.factor+'</td><td class="mono">'+t.co2e+'</td><td>'+(t.auto?chip("Auto","green"):chip("Manual","grey"))+'</td></tr>';
+  }).join("");
+
+  var efHtml = EMISSION_FACTORS.map(function(f){
+    return '<tr><td>'+f.name+'</td><td>'+f.category+'</td><td>'+f.unit+'</td><td class="mono">'+f.factor+'</td></tr>';
+  }).join("");
+
+  var deptHtml = DEPARTMENTS.map(function(d){
+    return '<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px"><span style="font-weight:600">'+esc(d.name)+'</span><span class="mono" style="color:var(--ink-soft)">Env score '+d.env+'</span></div>'+progress(d.env, "var(--env)")+'</div>';
+  }).join("");
+
+  return '<div>'+
+    '<div class="grid grid-3">'+
+      statCard("Total emissions (MTD)","0 t CO2e","0%",false,"vs prior period")+
+      statCard("Renewable energy share","0%","0 pts",true,"")+
+      statCard("Auto-calculated entries", "0%", null, false, autoCalc?"auto emission calc is on":"auto emission calc is off")+
+    '</div>'+
+    '<div class="section-title"><h2>Sustainability goals</h2></div>'+
+    '<div class="grid grid-3">'+goalsHtml+'</div>'+
+    '<div class="section-title"><h2>Carbon transactions</h2><span class="count">'+CARBON_TX.length+' entries &middot; '+(autoCalc?"auto-calculation enabled":"manual entry required")+'</span></div>'+
+    '<div class="card" style="padding:0"><table><thead><tr><th>ID</th><th>Date</th><th>Department</th><th>Source</th><th>Quantity</th><th>Emission factor</th><th>CO2e</th><th></th></tr></thead><tbody>'+txHtml+'</tbody></table></div>'+
+    '<div class="section-title"><h2>Emission factors</h2></div>'+
+    '<div class="card" style="padding:0"><table><thead><tr><th>Name</th><th>Category</th><th>Unit</th><th>kg CO2e / unit</th></tr></thead><tbody>'+efHtml+'</tbody></table></div>'+
+    '<div class="section-title"><h2>Emissions by department</h2></div>'+
+    '<div class="card">'+deptHtml+'</div>'+
+  '</div>';
+}
+
+function viewSocial(){
+  var evidenceRequired = state.config.evidenceRequired;
+  var csrHtml = state.csrActivities.map(function(a){
+    var actionCell = "";
+    if(a.status==="Pending Review" && isAdmin()){
+      actionCell = '<button class="btn btn-sm" data-action="approve-csr" data-id="'+a.id+'">Approve</button>';
+    }
+    return '<tr><td>'+esc(a.title)+'</td><td>'+chip(a.category,"blue")+'</td><td>'+esc(a.department)+'</td><td>'+a.date+'</td><td class="mono">'+a.participants+'</td><td>'+chip(a.status, statusTone(a.status))+'</td><td>'+actionCell+'</td></tr>';
+  }).join("");
+
+  var avgTraining = Math.round(TRAINING.reduce(function(a,t){return a+t.rate;},0)/TRAINING.length);
+
+  var divHtml = DIVERSITY.map(function(d){
+    return '<div style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px"><span style="font-weight:600">'+esc(d.label)+'</span><span class="mono">'+d.value+'%</span></div>'+progress(d.value,"var(--soc)")+'</div>';
+  }).join("");
+
+  var trainHtml = TRAINING.map(function(t){
+    return '<tr><td>'+esc(t.course)+'</td><td style="color:var(--ink-soft)">'+esc(t.dept)+'</td><td class="mono">'+t.rate+'%</td></tr>';
+  }).join("");
+
+  return '<div>'+
+    '<div class="grid grid-3">'+
+      statCard("CSR activities this quarter", state.csrActivities.length, null, false, "2 pending approval")+
+      statCard("Employee participation","0 people","0",true,"")+
+      statCard("Avg. training completion", avgTraining+"%", "0 pts", true, "")+
+    '</div>'+
+    '<div class="section-title"><h2>CSR activities</h2><span class="count">'+(evidenceRequired?"proof required to approve":"proof optional")+'</span></div>'+
+    '<div class="card" style="padding:0"><table><thead><tr><th>Activity</th><th>Category</th><th>Department</th><th>Date</th><th>Participants</th><th>Status</th><th></th></tr></thead><tbody>'+csrHtml+'</tbody></table></div>'+
+    '<div class="grid grid-2" style="margin-top:36px">'+
+      '<div><div class="section-title" style="margin-top:0"><h2>Diversity metrics</h2></div><div class="card">'+divHtml+'</div></div>'+
+      '<div><div class="section-title" style="margin-top:0"><h2>Training completion</h2></div><div class="card" style="padding:0"><table><thead><tr><th>Course</th><th>Scope</th><th>Completion</th></tr></thead><tbody>'+trainHtml+'</tbody></table></div></div>'+
+    '</div>'+
+  '</div>';
+}
+
+function viewGovernance(){
+  var today = new Date("2026-07-12");
+  var polHtml = POLICIES.map(function(p){
+    return '<tr><td>'+esc(p.title)+'</td><td class="mono">'+p.version+'</td><td>'+esc(p.dept)+'</td><td>'+chip(p.status, statusTone(p.status))+'</td></tr>';
+  }).join("");
+  var ackHtml = ACKNOWLEDGEMENTS.map(function(a){
+    return '<tr><td>'+esc(a.employee)+'</td><td>'+esc(a.policy)+'</td><td>'+a.date+'</td><td>'+chip(a.status, statusTone(a.status))+'</td></tr>';
+  }).join("");
+  var audHtml = AUDITS.map(function(a){
+    return '<tr><td>'+esc(a.title)+'</td><td>'+esc(a.dept)+'</td><td>'+esc(a.auditor)+'</td><td>'+a.date+'</td><td class="mono">'+a.findings+'</td><td>'+chip(a.status, statusTone(a.status))+'</td></tr>';
+  }).join("");
+  var issuesHtml = state.issues.map(function(i){
+    var overdue = i.status==="Open" && new Date(i.dueDate) < today;
+    var statusChip = i.status==="Resolved" ? chip("Resolved","green") : (overdue ? chip("Overdue","red") : chip("Open","gold"));
+    var action = (i.status==="Open" && isAdmin()) ? '<button class="btn btn-sm" data-action="resolve-issue" data-id="'+i.id+'">Mark resolved</button>' : "";
+    return '<tr><td>'+esc(i.title)+'</td><td>'+chip(i.severity, statusTone(i.severity))+'</td><td>'+esc(i.owner)+'</td><td class="mono">'+i.dueDate+'</td><td>'+statusChip+'</td><td>'+action+'</td></tr>';
+  }).join("");
+
+  var openIssues = state.issues.filter(function(i){return i.status==="Open";}).length;
+
+  return '<div>'+
+    '<div class="grid grid-3">'+
+      statCard("Active policies", POLICIES.filter(function(p){return p.status==="Active";}).length, null, false, "of "+POLICIES.length+" total")+
+      statCard("Acknowledgement rate","0%","0 pts",true,"")+
+      statCard("Open compliance issues", openIssues, null, false, "0 overdue")+
+    '</div>'+
+    '<div class="section-title"><h2>ESG policies</h2></div>'+
+    '<div class="card" style="padding:0"><table><thead><tr><th>Policy</th><th>Version</th><th>Scope</th><th>Status</th></tr></thead><tbody>'+polHtml+'</tbody></table></div>'+
+    '<div class="section-title"><h2>Policy acknowledgements</h2></div>'+
+    '<div class="card" style="padding:0"><table><thead><tr><th>Employee</th><th>Policy</th><th>Date</th><th>Status</th></tr></thead><tbody>'+ackHtml+'</tbody></table></div>'+
+    '<div class="section-title"><h2>Audits</h2></div>'+
+    '<div class="card" style="padding:0"><table><thead><tr><th>Audit</th><th>Department</th><th>Auditor</th><th>Date</th><th>Findings</th><th>Status</th></tr></thead><tbody>'+audHtml+'</tbody></table></div>'+
+    '<div class="section-title"><h2>Compliance issues</h2></div>'+
+    '<div class="card" style="padding:0"><table><thead><tr><th>Issue</th><th>Severity</th><th>Owner</th><th>Due date</th><th>Status</th><th></th></tr></thead><tbody>'+issuesHtml+'</tbody></table></div>'+
+  '</div>';
+}
+
+function viewGamification(){
+  var challenges = state.challenges;
+  var kanbanHtml = STAGES.map(function(stage){
+    var inStage = challenges.filter(function(c){ return c.status===stage; });
+    var idx = STAGES.indexOf(stage);
+    var next = STAGES[idx+1];
+    var cardsHtml = inStage.map(function(c){
+      var btns = "";
+      if(stage!=="Archived" && stage!=="Completed"){
+        btns = '<div class="kbtns">';
+        if(next && next!=="Archived"){
+          btns += '<button class="btn btn-sm" data-action="move-challenge" data-id="'+c.id+'" data-value="'+next+'">&rarr; '+next+'</button>';
+        }
+        btns += '<button class="btn btn-sm btn-ghost" data-action="move-challenge" data-id="'+c.id+'" data-value="Archived">Archive</button>';
+        btns += '</div>';
+      }
+      return '<div class="kcard"><div class="kt">'+esc(c.title)+'</div><div class="km">'+c.category+' &middot; '+c.xp+' XP &middot; '+c.difficulty+'</div>'+btns+'</div>';
+    }).join("");
+    if(inStage.length===0){ cardsHtml = '<div style="font-size:11px;color:var(--ink-soft);padding:6px">No challenges</div>'; }
+    return '<div class="kanban-col"><h4>'+stage+' &middot; '+inStage.length+'</h4>'+cardsHtml+'</div>';
+  }).join("");
+
+  var badgesHtml = BADGES.map(function(b){
+    return '<div class="card" style="opacity:'+(b.unlocked?1:0.45)+';text-align:center;padding:18px 12px"><div style="font-size:28px">'+b.icon+'</div><h3 style="font-size:13px;margin-top:8px">'+esc(b.name)+'</h3><div class="sub" style="margin-bottom:0">'+esc(b.desc)+'</div></div>';
+  }).join("");
+
+  var rewardsHtml = state.rewards.map(function(r){
+    var disabled = state.points < r.points || r.stock<=0;
+    var label = r.stock<=0 ? "Out of stock" : (state.points < r.points ? "Not enough points" : "Redeem");
+    return '<div class="reward-card"><div class="rname">'+esc(r.name)+'</div><div class="rdesc">'+esc(r.desc)+'</div>'+
+      '<div class="rfoot"><span class="mono" style="font-size:12.5px">'+r.points+' pts</span><span class="mono" style="font-size:11px;color:var(--ink-soft)">'+r.stock+' left</span></div>'+
+      '<button class="btn btn-primary btn-sm" data-action="redeem" data-id="'+r.id+'" '+(disabled?"disabled":"")+'>'+label+'</button></div>';
+  }).join("");
+
+  var ranked = state.users.map(function(u){
+    var live = (state.currentUser && u.id===state.currentUser.id) ? state.points : u.points;
+    return {id:u.id, name:u.name, dept:u.department, xp:live, level:u.level};
+  }).sort(function(a,b){ return b.xp-a.xp; });
+
+  var lbHtml = ranked.map(function(l, idx){
+    var you = state.currentUser && l.id===state.currentUser.id;
+    return '<div class="leaderboard-row" style="'+(you?"background:#F7F9F6":"")+'"><div class="lb-rank'+(idx===0?" top":"")+'">'+(idx+1)+'</div>'+
+      '<div style="flex:1"><div class="lb-name">'+esc(l.name)+(you?' <span class="mono" style="color:var(--ink-soft);font-size:11px">(you)</span>':'')+'</div><div class="lb-dept">'+esc(l.dept)+' &middot; Level '+l.level+'</div></div>'+
+      '<div class="lb-xp">'+l.xp.toLocaleString()+' XP</div></div>';
+  }).join("");
+  if(ranked.length===0){ lbHtml = '<div style="padding:16px;color:var(--ink-soft);font-size:12.5px">No employees have signed up yet.</div>'; }
+
+  return '<div>'+
+    '<div class="grid grid-4">'+
+      statCard("Your XP balance", state.points.toLocaleString(), null, false, "redeemable points")+
+      statCard("Your level", state.currentUser.level, null, false, esc(state.currentUser.name))+
+      statCard("Badges unlocked", BADGES.filter(function(b){return b.unlocked;}).length+" / "+BADGES.length, null, false, state.config.badgeAutoAward?"auto-award on":"auto-award off")+
+      statCard("Active challenges", challenges.filter(function(c){return c.status==="Active";}).length, null, false, "")+
+    '</div>'+
+    '<div class="section-title"><h2>Challenges</h2><span class="count">Draft &rarr; Active &rarr; Under Review &rarr; Completed / Archived</span></div>'+
+    '<div class="kanban">'+kanbanHtml+'</div>'+
+    '<div class="section-title"><h2>Badges</h2></div>'+
+    '<div class="grid grid-4">'+badgesHtml+'</div>'+
+    '<div class="section-title"><h2>Rewards catalog</h2><span class="count">balance: '+state.points.toLocaleString()+' pts</span></div>'+
+    '<div class="grid grid-4">'+rewardsHtml+'</div>'+
+    '<div class="section-title"><h2>Leaderboard</h2></div>'+
+    '<div class="card">'+lbHtml+'</div>'+
+  '</div>';
+}
+
+function viewActivity(){
+  var admin = isAdmin();
+  var log = state.activityLog;
+  if(!admin){
+    log = log.filter(function(a){ return a.userId===state.currentUser.id; });
+  } else if(state.activityFilter!=="All"){
+    log = log.filter(function(a){ return a.userId===state.activityFilter; });
+  }
+
+  var filterHtml = "";
+  if(admin){
+    var opts = '<option value="All">All employees</option>' + state.users.map(function(u){
+      return '<option value="'+esc(u.id)+'" '+(state.activityFilter===u.id?"selected":"")+'>'+esc(u.name)+'</option>';
+    }).join("");
+    filterHtml = '<div class="filter-bar"><select id="activity-user-filter" data-role="activity-filter">'+opts+'</select></div>';
+  }
+
+  var rows = log.map(function(a){
+    return '<div class="activity-row"><div class="activity-avatar">'+initials(a.userName)+'</div>'+
+      '<div class="activity-body"><div class="a-line"><b>'+esc(a.userName)+'</b> '+esc(a.action)+(a.detail?' &mdash; '+esc(a.detail):'')+'</div>'+
+      '<div class="a-time">'+esc(a.ts)+'</div></div></div>';
+  }).join("");
+  if(log.length===0){ rows = '<div style="padding:20px;color:var(--ink-soft);font-size:12.5px">No activity recorded yet.</div>'; }
+
+  return '<div>'+
+    '<div class="grid grid-3">'+
+      statCard(admin?"Total actions logged":"Your actions logged", log.length, null, false, "")+
+      statCard("Tracked employees", state.users.length, null, false, "")+
+      statCard("Your role", state.currentUser.role.charAt(0).toUpperCase()+state.currentUser.role.slice(1), null, false, "")+
+    '</div>'+
+    '<div class="section-title"><h2>'+(admin?"Activity feed &middot; all employees":"Your activity feed")+'</h2><span class="count">'+log.length+' entries</span></div>'+
+    '<div class="card">'+filterHtml+rows+'</div>'+
+  '</div>';
+}
+
+var REPORTS = [
+  {id:"RP1", name:"Environmental Report"},
+  {id:"RP2", name:"Social Report"},
+  {id:"RP3", name:"Governance Report"},
+  {id:"RP4", name:"ESG Summary Report"}
+];
+
+function opt(value, label, selected){
+  return '<option value="'+esc(value)+'" '+(selected===value?"selected":"")+'>'+esc(label)+'</option>';
+}
+
+function viewReports(){
+  var f = state.reportFilters;
+  var reportCards = REPORTS.map(function(r){
+    return '<div class="card"><h3 style="font-size:14px">'+r.name+'</h3><div class="sub">Filter by department, date range, employee</div>'+
+      '<div style="display:flex;gap:6px"><button class="btn btn-sm">Export PDF</button><button class="btn btn-sm">Export CSV</button></div></div>';
+  }).join("");
+
+  var deptOpts = '<option>All</option>' + DEPARTMENTS.map(function(d){ return opt(d.name, d.name, f.department); }).join("");
+  var moduleOpts = ['All','Environmental','Social','Governance','Gamification'].map(function(m){ return opt(m,m,f.module); }).join("");
+  var catOpts = ['All'].concat(CATEGORIES.slice(0,3)).map(function(c){ return opt(c,c,f.category); }).join("");
+  var challOpts = '<option>All</option>' + CHALLENGES_INIT.map(function(c){ return opt(c.title, c.title, f.challenge); }).join("");
+
+  var built = "";
+  if(state.reportBuilt){
+    var b = state.reportBuilt;
+    built = '<div style="margin-top:18px;border-top:1px solid var(--line);padding-top:16px">'+
+      '<div style="font-weight:600;font-size:13px;margin-bottom:8px">Preview - generated '+b.ts+'</div>'+
+      '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px">'+
+      chip("Department: "+b.department,"grey")+chip("Module: "+b.module,"grey")+chip("ESG Category: "+b.category,"grey")+chip("Challenge: "+b.challenge,"grey")+chip("Range: "+(b.from||"any")+" to "+(b.to||"any"),"grey")+
+      '</div><div style="display:flex;gap:8px"><button class="btn btn-sm">Export as PDF</button><button class="btn btn-sm">Export as Excel</button><button class="btn btn-sm">Export as CSV</button></div></div>';
+  }
+
+  return '<div>'+
+    '<div class="grid grid-4">'+reportCards+'</div>'+
+    '<div class="section-title"><h2>Custom report builder</h2></div>'+
+    '<div class="card">'+
+      '<div class="filter-bar">'+
+        '<select data-role="filter" data-key="department">'+deptOpts+'</select>'+
+        '<select data-role="filter" data-key="module">'+moduleOpts+'</select>'+
+        '<select data-role="filter" data-key="category">'+catOpts+'</select>'+
+        '<select data-role="filter" data-key="challenge">'+challOpts+'</select>'+
+        '<input type="date" data-role="filter" data-key="from" value="'+f.from+'" />'+
+        '<input type="date" data-role="filter" data-key="to" value="'+f.to+'" />'+
+      '</div>'+
+      '<button class="btn btn-primary btn-sm" data-action="build-report">Build report</button>'+
+      built+
+    '</div>'+
+  '</div>';
+}
+
+function viewSettings(){
+  var c = state.config;
+  var w = state.weights;
+
+  function toggleRow(key, label, sub){
+    return '<div class="toggle-row"><div><div class="t-label">'+label+'</div>'+(sub?'<div class="t-sub">'+sub+'</div>':'')+'</div>'+
+      '<button class="toggle '+(c[key]?"on":"")+'" data-action="toggle" data-id="'+key+'"><span class="knob"></span></button></div>';
+  }
+
+  var deptRows = DEPARTMENTS.map(function(d){
+    return '<tr><td>'+esc(d.name)+'</td><td class="mono">'+d.code+'</td><td>'+esc(d.head)+'</td><td class="mono">'+d.employees+'</td><td>'+chip("Active","green")+'</td></tr>';
+  }).join("");
+
+  var catChips = CATEGORIES.map(function(cName){ return chip(cName,"grey"); }).join("");
+
+  var userRows = state.users.map(function(u){
+    var isYou = state.currentUser && u.id===state.currentUser.id;
+    return '<tr><td>'+esc(u.name)+(isYou?' <span class="mono" style="color:var(--ink-soft);font-size:11px">(you)</span>':'')+'</td>'+
+      '<td style="color:var(--ink-soft)">'+esc(u.email)+'</td><td>'+esc(u.department)+'</td>'+
+      '<td><span class="role-badge role-'+u.role+'">'+u.role+'</span></td>'+
+      '<td><button class="btn btn-sm" data-action="toggle-role" data-id="'+u.id+'" '+(isYou?"disabled":"")+'>Make '+(u.role==="admin"?"employee":"admin")+'</button></td></tr>';
+  }).join("");
+
+  return '<div>'+
+    '<div class="grid grid-2">'+
+      '<div class="card"><h3>ESG configuration</h3><div class="sub">Business rules that govern how the platform behaves</div>'+
+        toggleRow("autoCalc","Auto emission calculation","Carbon transactions calculate automatically from linked ERP records")+
+        toggleRow("evidenceRequired","Evidence requirement","CSR participation cannot be approved without attached proof")+
+        toggleRow("badgeAutoAward","Badge auto-award","Badges assign automatically when an unlock rule is satisfied")+
+      '</div>'+
+      '<div class="card"><h3>Notification settings</h3><div class="sub">In-app and email alerts</div>'+
+        toggleRow("notifyIssue","New compliance issue raised","")+
+        toggleRow("notifyApproval","CSR / Challenge approval decisions","")+
+        toggleRow("notifyPolicy","Policy acknowledgement reminders","")+
+        toggleRow("notifyBadge","Badge unlocks","")+
+      '</div>'+
+    '</div>'+
+    '<div class="section-title"><h2>Overall score weighting</h2></div>'+
+    '<div class="card"><div class="sub" style="margin-bottom:10px">Overall ESG Score = weighted average of department total scores</div>'+
+      '<div class="weight-row"><span class="wlabel" style="color:var(--env)">Environmental</span><input type="range" min="0" max="100" value="'+w.env+'" data-role="weight" data-id="env"/><span class="wval">'+w.env+'%</span></div>'+
+      '<div class="weight-row"><span class="wlabel" style="color:var(--soc)">Social</span><input type="range" min="0" max="100" value="'+w.soc+'" data-role="weight" data-id="soc"/><span class="wval">'+w.soc+'%</span></div>'+
+      '<div class="weight-row"><span class="wlabel" style="color:var(--gov)">Governance</span><input type="range" min="0" max="100" value="'+w.gov+'" data-role="weight" data-id="gov"/><span class="wval">'+w.gov+'%</span></div>'+
+    '</div>'+
+    '<div class="section-title"><h2>Departments</h2></div>'+
+    '<div class="card" style="padding:0"><table><thead><tr><th>Name</th><th>Code</th><th>Head</th><th>Employees</th><th>Status</th></tr></thead><tbody>'+deptRows+'</tbody></table></div>'+
+    '<div class="section-title"><h2>User accounts</h2><span class="count">'+state.users.length+' employees with platform access</span></div>'+
+    '<div class="card" style="padding:0"><table><thead><tr><th>Name</th><th>Email</th><th>Department</th><th>Role</th><th></th></tr></thead><tbody>'+userRows+'</tbody></table></div>'+
+    '<div class="section-title"><h2>Categories</h2></div>'+
+    '<div class="card"><div style="display:flex;flex-wrap:wrap;gap:8px">'+catChips+'</div></div>'+
+  '</div>';
+}
+
+/* ---------------- Render ---------------- */
+
+function renderSidebar(){
+  var navHtml = getNav().map(function(n){
+    return '<button class="nav-item'+(state.view===n.id?" active":"")+'" data-action="nav" data-id="'+n.id+'"><span class="dot" style="background:'+n.color+'"></span>'+n.label+'</button>';
+  }).join("");
+  return '<div class="sidebar">'+
+    '<div class="brand">'+brandMark()+'<div><div class="brand-name">EcoSphere</div><div class="brand-sub">ESG Platform</div></div></div>'+
+    '<div class="nav-group">'+navHtml+'</div>'+
+    '<div class="sidebar-footer">Signed in as '+esc(state.currentUser.name)+' &middot; '+state.currentUser.role+'</div>'+
+  '</div>';
+}
+
+function renderContent(){
+  if(state.view==="settings" && !isAdmin()){
+    return '<div class="access-denied"><h3 class="display">Admins only</h3><p>Your account does not have permission to view platform settings.</p></div>';
+  }
+  switch(state.view){
+    case "dashboard": return viewDashboard();
+    case "environmental": return viewEnvironmental();
+    case "social": return viewSocial();
+    case "governance": return viewGovernance();
+    case "gamification": return viewGamification();
+    case "activity": return viewActivity();
+    case "reports": return viewReports();
+    case "settings": return viewSettings();
+    default: return "";
+  }
+}
+
+function render(){
+  if(!state.currentUser){
+    document.getElementById("root").innerHTML = viewLogin() + (state.toast ? '<div class="toast">'+esc(state.toast)+'</div>' : '');
+    var enterKey = function(fn){ return function(e){ if(e.key==="Enter") fn(); }; };
+    if(state.authMode==="signup"){
+      var c2 = document.getElementById("signup-code2");
+      if(c2) c2.addEventListener("keydown", enterKey(doSignup));
+    } else {
+      var codeEl = document.getElementById("login-code");
+      if(codeEl) codeEl.addEventListener("keydown", enterKey(doLogin));
+    }
+    return;
+  }
+
+  var t = TITLES[state.view];
+  var u = state.currentUser;
+  var html = '<div class="app-shell">'+
+    renderSidebar()+
+    '<div class="main">'+
+      '<div class="topbar"><div><div class="eyebrow">'+t[0]+'</div><h1>'+t[1]+'</h1></div>'+
+        '<div style="display:flex;align-items:center;gap:14px">'+
+        '<div class="xp-pill"><div class="xp-avatar">'+initials(u.name)+'</div><div class="xp-text"><div><b>'+state.points.toLocaleString()+'</b> pts</div><div style="color:var(--ink-soft)">Level '+u.level+'</div></div></div>'+
+        '<div class="user-menu"><div class="um-info"><div class="um-name">'+esc(u.name)+'</div><div class="um-role"><span class="role-badge role-'+u.role+'">'+u.role+'</span></div></div>'+
+        '<button class="btn btn-sm" data-action="logout">Log out</button></div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="content">'+renderContent()+'</div>'+
+    '</div>'+
+  '</div>'+
+  (state.toast ? '<div class="toast">'+esc(state.toast)+'</div>' : '');
+
+  document.getElementById("root").innerHTML = html;
+}
+
+/* ---------------- Actions ---------------- */
+
+function moveChallenge(id, status){
+  var c0 = state.challenges.find(function(c){ return c.id===id; });
+  state.challenges = state.challenges.map(function(c){ return c.id===id ? Object.assign({}, c, {status: status}) : c; });
+  logActivity("Moved challenge", (c0?c0.title:id)+" \u2192 "+status);
+  flash('Challenge moved to "'+status+'"');
+}
+function resolveIssue(id){
+  if(!isAdmin()){ flash("Only admins can resolve compliance issues"); return; }
+  var i0 = state.issues.find(function(i){ return i.id===id; });
+  state.issues = state.issues.map(function(i){ return i.id===id ? Object.assign({}, i, {status:"Resolved"}) : i; });
+  logActivity("Resolved compliance issue", i0?i0.title:id);
+  flash("Compliance issue marked resolved");
+}
+function approveCsr(id){
+  if(!isAdmin()){ flash("Only admins can approve CSR activities"); return; }
+  if(state.config.evidenceRequired){
+    flash("Cannot approve - proof file required");
+    return;
+  }
+  var a0 = state.csrActivities.find(function(c){ return c.id===id; });
+  state.csrActivities = state.csrActivities.map(function(c){ return c.id===id ? Object.assign({}, c, {status:"Approved"}) : c; });
+  logActivity("Approved CSR activity", a0?a0.title:id);
+  flash("CSR activity approved");
+}
+function redeem(id){
+  var r = state.rewards.find(function(x){ return x.id===id; });
+  if(!r || state.points < r.points || r.stock<=0) return;
+  state.points -= r.points;
+  state.rewards = state.rewards.map(function(x){ return x.id===id ? Object.assign({}, x, {stock: x.stock-1}) : x; });
+  logActivity("Redeemed reward", r.name+" ("+r.points+" pts)");
+  flash('Redeemed "'+r.name+'" for '+r.points+' pts');
+}
+function buildReport(){
+  state.reportBuilt = Object.assign({}, state.reportFilters, {ts: new Date().toLocaleTimeString()});
+  logActivity("Built a custom report", state.reportFilters.module+" / "+state.reportFilters.department);
+  render();
+}
+
+function doLogin(){
+  var email = document.getElementById("login-email").value.trim().toLowerCase();
+  var code = document.getElementById("login-code").value.trim();
+  if(!email || !code){
+    state.authError = "Enter your email and authorization code.";
+    render();
+    return;
+  }
+  var user = state.users.find(function(u){ return u.email.toLowerCase()===email; });
+  if(!user || user.code !== code){
+    state.authError = "No account matches that email and code. Check your details or create an account.";
+    render();
+    return;
+  }
+  state.authError = null;
+  state.currentUser = user;
+  state.points = user.points;
+  state.view = "dashboard";
+  logActivity("Signed in");
+  render();
+}
+
+function doSignup(){
+  var name = document.getElementById("signup-name").value.trim();
+  var email = document.getElementById("signup-email").value.trim().toLowerCase();
+  var department = document.getElementById("signup-department").value;
+  var code = document.getElementById("signup-code").value.trim();
+  var code2 = document.getElementById("signup-code2").value.trim();
+
+  if(!name || !email || !department || !code || !code2){
+    state.authError = "Please fill in every field to create your account.";
+    render();
+    return;
+  }
+  if(code !== code2){
+    state.authError = "Your authorization codes don't match.";
+    render();
+    return;
+  }
+  if(code.length < 4){
+    state.authError = "Choose a code that's at least 4 characters long.";
+    render();
+    return;
+  }
+  if(state.users.some(function(u){ return u.email.toLowerCase()===email; })){
+    state.authError = "An account with that email already exists. Try signing in instead.";
+    render();
+    return;
+  }
+
+  var newUser = {
+    id: nextUserId(),
+    name: name,
+    email: email,
+    code: code,
+    department: department,
+    role: state.users.length===0 ? "admin" : "employee",
+    points: 0,
+    level: 0
+  };
+  state.users = state.users.concat([newUser]);
+  state.currentUser = newUser;
+  state.points = 0;
+  state.authError = null;
+  state.authMode = "login";
+  state.view = "dashboard";
+  logActivity("Created account", newUser.role==="admin" ? "First account - granted admin" : "");
+  render();
+}
+
+function toggleAuthMode(){
+  state.authMode = state.authMode==="login" ? "signup" : "login";
+  state.authError = null;
+  render();
+}
+
+function doLogout(){
+  logActivity("Signed out");
+  var u = state.currentUser;
+  if(u){
+    state.users = state.users.map(function(x){ return x.id===u.id ? Object.assign({}, x, {points: state.points}) : x; });
+  }
+  state.currentUser = null;
+  state.view = "dashboard";
+  render();
+}
+
+function toggleUserRole(id){
+  if(!isAdmin()) return;
+  var target = state.users.find(function(u){ return u.id===id; });
+  if(!target) return;
+  var newRole = target.role==="admin" ? "employee" : "admin";
+  state.users = state.users.map(function(u){ return u.id===id ? Object.assign({}, u, {role:newRole}) : u; });
+  logActivity("Changed role for "+target.name, target.role+" \u2192 "+newRole);
+  flash(target.name+" is now "+newRole);
+}
+
+/* ---------------- Event wiring ---------------- */
+
+document.addEventListener("click", function(e){
+  var el = e.target.closest("[data-action]");
+  if(!el) return;
+  var action = el.getAttribute("data-action");
+  var id = el.getAttribute("data-id");
+  var value = el.getAttribute("data-value");
+
+  if(action==="login"){ doLogin(); }
+  else if(action==="signup"){ doSignup(); }
+  else if(action==="toggle-auth"){ toggleAuthMode(); }
+  else if(action==="logout"){ doLogout(); }
+  else if(action==="nav"){
+    var navItem = NAV.find(function(n){ return n.id===id; });
+    state.view = id;
+    logActivity("Viewed page", navItem ? navItem.label : id);
+    render();
+  }
+  else if(action==="move-challenge"){ moveChallenge(id, value); }
+  else if(action==="resolve-issue"){ resolveIssue(id); }
+  else if(action==="approve-csr"){ approveCsr(id); }
+  else if(action==="redeem"){ redeem(id); }
+  else if(action==="toggle-role"){ toggleUserRole(id); }
+  else if(action==="toggle"){
+    if(!isAdmin()){ flash("Only admins can change platform settings"); return; }
+    state.config[id] = !state.config[id];
+    logActivity("Toggled setting", id+" \u2192 "+(state.config[id]?"on":"off"));
+    render();
+  }
+  else if(action==="build-report"){ buildReport(); }
+});
+
+document.addEventListener("change", function(e){
+  var el = e.target;
+  if(el.matches('[data-role="weight"]')){
+    if(!isAdmin()){ flash("Only admins can change score weighting"); render(); return; }
+    var key = el.getAttribute("data-id");
+    var val = Number(el.value);
+    var w = state.weights;
+    var others = Object.keys(w).filter(function(k){ return k!==key; });
+    var rest = 100 - val;
+    var otherSum = w[others[0]] + w[others[1]];
+    if(otherSum<=0) otherSum = 1;
+    var next = {};
+    next[key] = val;
+    next[others[0]] = Math.round(w[others[0]]/otherSum*rest);
+    next[others[1]] = 100 - val - next[others[0]];
+    state.weights = next;
+    logActivity("Adjusted ESG weighting", "E "+next.env+"% / S "+next.soc+"% / G "+next.gov+"%");
+    render();
+  } else if(el.matches('[data-role="filter"]')){
+    var fkey = el.getAttribute("data-key");
+    state.reportFilters[fkey] = el.value;
+  } else if(el.matches('[data-role="activity-filter"]')){
+    state.activityFilter = el.value;
+    render();
+  }
+});
+
+render();
+})();
+</script>
+</body>
+</html>
